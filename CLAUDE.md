@@ -74,11 +74,12 @@ Claude Codeとユーザーが対話しながらIssueを作成:
 
 #### Slash Commands
 開発効率を上げるためのコマンド:
-- `/plan` - Issue作成前の設計ディスカッション
-- `/issue` - Issue作成ワークフローを開始
-- `/dev {issue-number}` - 指定Issueの開発を開始
-- `/status` - 現在の作業状態を確認
-- `/review` - PRレビューの準備
+- `/project:plan` - Issue作成前の設計ディスカッション
+- `/project:issue` - Issue作成ワークフローを開始
+- `/project:dev {issue-number}` - 指定Issueの開発を開始
+- `/project:status` - 現在の作業状態を確認
+- `/project:review` - PRレビューの準備
+- `/project:quick-issue {title}` - 素早くIssueを作成（最小限の対話）
 
 #### Git Hooks Configuration
 `.claude/hooks/`に配置:
@@ -222,14 +223,23 @@ See individual Issues for setup instructions:
 
 ### Development Commands
 ```bash
-# Start new feature
-claude /dev {issue-number}
+# Issue作成前の設計ディスカッション
+claude /project:plan "新機能のアイデア"
 
-# Check development status
-claude /status
+# 対話的なIssue作成
+claude /project:issue
 
-# Prepare for review
-claude /review
+# 素早いIssue作成
+claude /project:quick-issue "バグ修正: ログイン画面のエラー"
+
+# 開発開始（Issue番号を指定）
+claude /project:dev 5
+
+# 開発状況の確認
+claude /project:status
+
+# レビュー準備
+claude /project:review
 ```
 
 ---
