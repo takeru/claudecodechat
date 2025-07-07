@@ -50,9 +50,11 @@ Claude Codeとユーザーが対話しながらIssueを作成:
 #### 2. Development Workflow
 すべての開発は以下のフローに従う:
 
-1. **Branch作成**
+1. **Git Worktree作成**
    ```bash
-   git checkout -b feature/issue-{number}-{short-description}
+   # /project:dev コマンドが自動的に実行
+   git worktree add -b feature/issue-{number}-{short-description} ./worktrees/issue-{number}
+   cd ./worktrees/issue-{number}
    ```
 
 2. **WIP PR作成**
@@ -76,7 +78,7 @@ Claude Codeとユーザーが対話しながらIssueを作成:
 開発効率を上げるためのコマンド:
 - `/project:plan` - Issue作成前の設計ディスカッション
 - `/project:issue` - Issue作成ワークフローを開始
-- `/project:dev {issue-number}` - 指定Issueの開発を開始
+- `/project:dev {issue-number}` - 指定Issueの開発を開始（git worktreeで隔離環境を作成）
 - `/project:status` - 現在の作業状態を確認
 - `/project:review` - PRレビューの準備
 - `/project:quick-issue {title}` - 素早くIssueを作成（最小限の対話）
@@ -89,9 +91,14 @@ Claude Codeとユーザーが対話しながらIssueを作成:
 
 #### Best Practices
 1. **常に最新のmainから分岐**
-2. **1 Issue = 1 PR = 1 Feature**
+2. **1 Issue = 1 PR = 1 Feature = 1 Worktree**
 3. **WIPでも早めにPRを作成**
 4. **レビュー前にセルフチェック**
+5. **マージ後はworktreeを削除**
+   ```bash
+   git worktree remove ./worktrees/issue-{number}
+   git branch -d feature/issue-{number}-{short-description}
+   ```
 
 ### Code Standards
 - TypeScript for type safety
@@ -158,8 +165,9 @@ API_TOKEN=<generate-secure-token>
 ### Branch Strategy
 - **Branch naming**: `feature/issue-{number}-{short-description}`
 - **Always branch from**: latest `main`
+- **Working directory**: `./worktrees/issue-{number}` (git worktree使用)
 - **Merge strategy**: Squash and merge
-- **Delete branch**: After merge
+- **Delete branch**: After merge (worktreeも削除)
 
 ### Pull Request Process
 1. Create feature branch from Issue
@@ -194,6 +202,8 @@ claudecodechat/
 │   └── package.json
 ├── docs/             # Documentation
 ├── scripts/          # Utility scripts
+├── worktrees/        # Git worktree作業ディレクトリ（.gitignore対象）
+│   └── issue-{N}/    # 各Issueの隔離された作業環境
 └── CLAUDE.md         # This file
 ```
 
@@ -233,6 +243,7 @@ claude /project:issue
 claude /project:quick-issue "バグ修正: ログイン画面のエラー"
 
 # 開発開始（Issue番号を指定）
+# 自動的に./worktrees/issue-5/に移動して作業
 claude /project:dev 5
 
 # 開発状況の確認
